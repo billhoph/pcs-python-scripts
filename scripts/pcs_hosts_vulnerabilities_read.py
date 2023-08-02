@@ -1,6 +1,12 @@
 """ Get Vulnerabilities in Hosts (Running Hosts) """
 
 import json
+import csv
+
+# with open("./vul_baseline.csv", 'r') as file:
+#  csvreader = csv.reader(file)
+#  for row in csvreader:
+#    print(row)
 
 # pylint: disable=import-error
 from prismacloud.api import pc_api, pc_utility
@@ -45,5 +51,5 @@ for host in hosts:
     if not vulnerabilities:
         continue
     for vulnerability in sorted(vulnerabilities, key=lambda v: v['cve']):
-        print('    %s (%s)' % (vulnerability['cve'], vulnerability['vecStr']))
+        print('    %s' % (vulnerability['cve']))
 print()
