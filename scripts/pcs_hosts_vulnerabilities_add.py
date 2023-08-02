@@ -43,4 +43,5 @@ with open('./Vul/vul_baseline.csv', newline='') as csvfile:
             ]
         }
         print(body_params)
+        pc_api.tag_set_vulnerability('eks-01',body_params)
 
