@@ -3,9 +3,6 @@
 import json
 import csv
 
-with open('./Vul/vul_baseline.csv', newline='') as csvfile:
-
-rows = csv.reader(csvfile)
 
 # pylint: disable=import-error
 from prismacloud.api import pc_api, pc_utility
@@ -34,14 +31,16 @@ intelligence = pc_api.statuses_intelligence()
 print(' done.')
 print()
 
-for row in rows:
-  body_params = {
-    "id": row,
-    "packageName": "*",
-    "resourceType": "host",
-    "resources": [
-        "ip-*"
-    ]
-  }
-  print(body_params)
+with open('./Vul/vul_baseline.csv', newline='') as csvfile:
+    rows = csv.reader(csvfile)
+    for row in rows:
+        body_params = {
+            "id": row[0],
+            "packageName": "*",
+            "resourceType": "host",
+            "resources": [
+                "ip-*"
+            ]
+        }
+        print(body_params)
 
