@@ -5,12 +5,7 @@ import csv
 
 with open('./Vul/vul_baseline.csv', newline='') as csvfile:
 
-  # 讀取 CSV 檔案內容
-  rows = csv.reader(csvfile)
-
-  # 以迴圈輸出每一列
-  for row in rows:
-    print(row)
+rows = csv.reader(csvfile)
 
 # pylint: disable=import-error
 from prismacloud.api import pc_api, pc_utility
@@ -39,13 +34,14 @@ intelligence = pc_api.statuses_intelligence()
 print(' done.')
 print()
 
-body_params = {
-  "id": "string",
-  "packageName": "*",
-  "resourceType": "host",
-  "resources": [
-    "ip-*"
-  ]
-}
-
+for row in rows:
+  body_params = {
+    "id": row,
+    "packageName": "*",
+    "resourceType": "host",
+    "resources": [
+        "ip-*"
+    ]
+  }
+  print(body_params)
 
