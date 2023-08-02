@@ -38,3 +38,14 @@ print('Testing Compute API Access ...', end='')
 intelligence = pc_api.statuses_intelligence()
 print(' done.')
 print()
+
+body_params = {
+  "id": "string",
+  "packageName": "*",
+  "resourceType": "host",
+  "resources": [
+    "ip-*"
+  ]
+}
+
+
