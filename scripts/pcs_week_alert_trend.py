@@ -2,12 +2,14 @@
 
 # pylint: disable=import-error
 from prismacloud.api import pc_api, pc_utility
+from tabulate import tabulate
+
 import pandas as pd
 import time
 import datetime
 import string
 import random
-from tabulate import tabulate
+import os
 
 # --Configuration-- #
 
@@ -111,6 +113,7 @@ for x in range(args.week):
     #df_trend = df_trend.merge(df_severity,left_on='Policy Severity',right_on='Policy Severity')
     df_trend = df_trend.merge(df_severity, on='Policy Severity', how='left')
     df_trend[column_name].fillna(0, inplace=True)
+    os.remove(report_filename)
 
 df_trend = df_trend.set_index('Policy Severity').transpose()
 print(tabulate(df_trend, headers='keys', tablefmt='psql'))
