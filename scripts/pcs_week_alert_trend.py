@@ -108,6 +108,9 @@ for x in range(args.week):
     df_severity = df.groupby(['Policy Severity'])['Policy Severity'].count().to_frame()
     df_severity.columns = [column_name]
     df_severity = df_severity.reset_index()
-    df_trend = df_trend.merge(df_severity,left_on='Policy Severity',right_on='Policy Severity')
-    
+    #df_trend = df_trend.merge(df_severity,left_on='Policy Severity',right_on='Policy Severity')
+    df_trend = df_trend.merge(df_severity, on='Policy Severity', how='left')
+    df_trend[column_name].fillna(0, inplace=True)
+
+df_trend = df_trend.set_index('Policy Severity').transpose()
 print(tabulate(df_trend, headers='keys', tablefmt='psql'))
