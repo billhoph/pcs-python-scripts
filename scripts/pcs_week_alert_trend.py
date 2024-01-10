@@ -95,7 +95,7 @@ for x in range(args.week):
 
     while(not report_ready):
         alert_report_update = pc_api.alert_csv_status(alert_report['id'])
-        #print('Getting the Alert Report Status...', alert_report_update['status'])
+        # print('Getting the Alert Report Status...', alert_report_update['status'])
         time.sleep(2.5)    
         if (alert_report_update['status'] == 'READY_TO_DOWNLOAD'):
             csv_report = pc_api.alert_csv_download(alert_report['id'])
@@ -103,14 +103,14 @@ for x in range(args.week):
             file = open(report_filename, "w")
             file.write(csv_report)
             file.close()
-            print("Alert Report Downloaded...")
+            # print("Alert Report Downloaded...")
             break
 
     df = pd.read_csv(report_filename, usecols=['Policy Severity'])
     df_severity = df.groupby(['Policy Severity'])['Policy Severity'].count().to_frame()
     df_severity.columns = [column_name]
     df_severity = df_severity.reset_index()
-    #df_trend = df_trend.merge(df_severity,left_on='Policy Severity',right_on='Policy Severity')
+    # df_trend = df_trend.merge(df_severity,left_on='Policy Severity',right_on='Policy Severity')
     df_trend = df_trend.merge(df_severity, on='Policy Severity', how='left')
     df_trend[column_name].fillna(0, inplace=True)
     os.remove(report_filename)
