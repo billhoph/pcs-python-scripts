@@ -5,7 +5,9 @@ from prismacloud.api import pc_api, pc_utility
 import pandas as pd
 import time
 import datetime
-import json
+import string
+import random
+from tabulate import tabulate
 
 # --Configuration-- #
 
@@ -23,11 +25,21 @@ settings = pc_utility.get_settings(args)
 pc_api.configure(settings)
 
 dt = datetime.datetime(year=2022, month=1, day=1)
+data = ['critical', 'high', 'medium', 'low', 'information']
+df_trend = pd.DataFrame(data, columns = ['Policy Severity'])
 start_ts = time.mktime(dt.timetuple())*1000
 weeks = args.week
 
+
+# initializing size of string
+N = 5
+ 
+# using random.choices()
+# generating random strings
+res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
+
 for x in range(weeks):
-    end_ts = time.mktime((datetime.datetime.today() - datetime.timedelta(weeks)).timetuple())*1000
+    end_ts = time.mktime((datetime.datetime.today() - datetime.timedelta(x)).timetuple())*1000
     print('API - Gernerate new CSV Report ...', end='')
     body_params = {
         "detailed": True,
@@ -48,6 +60,7 @@ for x in range(weeks):
             {"name":"policy.severity", "operator":"=", "value": "high"},
             {"name":"policy.severity", "operator":"=", "value": "critical"},
             {"name":"policy.severity", "operator":"=", "value": "medium"},
+            {"name":"policy.severity", "operator":"=", "value": "low"},
             {"name":"alert.status","operator":"=", "value": "open"}
         ],
         "groupBy": [
@@ -72,8 +85,9 @@ for x in range(weeks):
     print()
     alert_report = pc_api.alert_csv_create(body_params)
     print('Report Created with Report ID: %s' % alert_report['id'])
-    report_time = time.strftime("%Y%m%d-%H%M%S")
-    report_filename = "./Reports/customer-report-" + report_time + "-" + weeks + ".csv"
+    report_time = time.strftime("%Y%m%d")
+    report_filename = "./Reports/customer-report-" + report_time + "-" + res + "-" + str(x) + ".csv"
+    column_name = str(x) + ' Week ago'
     print()
 
     report_ready = False
@@ -81,14 +95,21 @@ for x in range(weeks):
 
     while(not report_ready):
         alert_report_update = pc_api.alert_csv_status(alert_report['id'])
-        print('Getting the Alert Report Status...', alert_report_update['status'])
+        #print('Getting the Alert Report Status...', alert_report_update['status'])
         time.sleep(2.5)    
         if (alert_report_update['status'] == 'READY_TO_DOWNLOAD'):
             csv_report = pc_api.alert_csv_download(alert_report['id'])
-
             # Write Download Report File to Current Report Directory
             file = open(report_filename, "w")
             file.write(csv_report)
             file.close()
             print("Alert Report Downloaded...")
             break
+
+    df = pd.read_csv(report_filename, usecols=['Policy Severity'])
+    df_severity = df.groupby(['Policy Severity'])['Policy Severity'].count().to_frame()
+    df_severity.columns = [column_name]
+    df_severity = df_severity.reset_index()
+    df_trend = df_trend.merge(df_severity,left_on='Policy Severity',right_on='Policy Severity')
+    
+print(tabulate(df_trend, headers='keys', tablefmt='psql'))
