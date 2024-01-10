@@ -28,8 +28,6 @@ dt = datetime.datetime(year=2022, month=1, day=1)
 data = ['critical', 'high', 'medium', 'low', 'information']
 df_trend = pd.DataFrame(data, columns = ['Policy Severity'])
 start_ts = time.mktime(dt.timetuple())*1000
-weeks = args.week
-
 
 # initializing size of string
 N = 5
@@ -38,8 +36,8 @@ N = 5
 # generating random strings
 res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
 
-for x in range(weeks):
-    end_ts = time.mktime((datetime.datetime.today() - datetime.timedelta(x)).timetuple())*1000
+for x in range(args.week):
+    end_ts = time.mktime((datetime.datetime.today() - datetime.timedelta(weeks = x)).timetuple())*1000
     print('API - Gernerate new CSV Report ...', end='')
     body_params = {
         "detailed": True,
